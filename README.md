@@ -10,4 +10,4 @@ The following cell material types are supported:
 - Water
 - Steam
 
-![Screenshot](https://github.com/tommccracken/rust-fall/blob/master/rust-fall-example-1.gif "Screenshot")
+![](https://github.com/tommccracken/rust-fall/blob/main/rust-fall-example-1.gif "Screenshot")
