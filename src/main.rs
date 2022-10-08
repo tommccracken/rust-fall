@@ -53,19 +53,25 @@ async fn main() {
                 println!("Single step performed");
             }
         }
-        if root_ui().button(Vec2::new(150.0, 10.), "Reset") {
+        if root_ui().button(Vec2::new(150.0, 10.), "Restart") {
             world = populate_world();
             pixels_per_cell = WORLD_PANE_SIZE as f32 / world.world_size as f32;
-            println!("Simulation reset");
+            println!("Simulation restarted");
+        }
+        if root_ui().button(Vec2::new(213.0, 10.), "Clear") {
+            world.clear();
+            println!("All cells cleared");
         }
         if root_ui().button(
-            Vec2::new(199.0, 10.0),
+            Vec2::new(262.0, 10.0),
             match material_type {
                 CellType::Empty => "Empty",
                 CellType::Sand => "Sand",
                 CellType::Water => "Water",
                 CellType::Wall => "Wall",
                 CellType::Steam => "Steam",
+                CellType::Oil => "Oil",
+                CellType::Wood => "Wood",
             },
         ) {
             material_type = toggle(material_type);
@@ -152,7 +158,7 @@ fn draw(world: &World, pixels_per_cell: f32) {
                     if cell_type == CellType::Wall {
                         BLACK
                     } else if cell_type == CellType::Sand {
-                        BROWN
+                        BEIGE
                     } else if cell_type == CellType::Water {
                         if row < (world.grid.rows - 1) {
                             if world.grid.cells[row + 1][column].cell_type == CellType::Empty {
@@ -165,6 +171,10 @@ fn draw(world: &World, pixels_per_cell: f32) {
                         }
                     } else if cell_type == CellType::Steam {
                         LIGHTGRAY
+                    } else if cell_type == CellType::Oil {
+                        DARKBROWN
+                    } else if cell_type == CellType::Wood {
+                        BROWN
                     } else {
                         panic!("Invalid cell type");
                     },
@@ -173,10 +183,10 @@ fn draw(world: &World, pixels_per_cell: f32) {
         }
     }
     // Draw FPS and step count
-    draw_text(&format!("FPS: {}", get_fps()), 280.0, 25.0, 20.0, DARKGRAY);
+    draw_text(&format!("FPS: {}", get_fps()), 310.0, 25.0, 20.0, DARKGRAY);
     draw_text(
         &format!("STEPS: {}", &world.steps),
-        370.0,
+        390.0,
         25.0,
         20.0,
         DARKGRAY,
@@ -186,9 +196,11 @@ fn draw(world: &World, pixels_per_cell: f32) {
 fn toggle(current_type: CellType) -> CellType {
     match current_type {
         CellType::Empty => CellType::Wall,
-        CellType::Wall => CellType::Sand,
+        CellType::Wall => CellType::Wood,
+        CellType::Wood => CellType::Sand,
         CellType::Sand => CellType::Water,
-        CellType::Water => CellType::Steam,
+        CellType::Water => CellType::Oil,
+        CellType::Oil => CellType::Steam,
         CellType::Steam => CellType::Empty,
     }
 }
@@ -208,14 +220,16 @@ where
 
 fn populate_world() -> World {
     let mut world = World::new(examples::EXAMPLE_1.0);
-    for row in 0..world.grid.rows {
-        for column in 0..world.grid.columns {
+    for row in 0..examples::EXAMPLE_1.0 {
+        for column in 0..examples::EXAMPLE_1.0 {
             world.grid.cells[row][column].cell_type = match examples::EXAMPLE_1.1[row][column] {
                 0 => CellType::Empty,
                 1 => CellType::Wall,
-                2 => CellType::Sand,
-                3 => CellType::Water,
-                4 => CellType::Steam,
+                2 => CellType::Wood,
+                3 => CellType::Sand,
+                4 => CellType::Water,
+                5 => CellType::Oil,
+                6 => CellType::Steam,
                 _ => CellType::Empty,
             };
         }
